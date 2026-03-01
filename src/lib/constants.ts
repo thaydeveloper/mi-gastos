@@ -1,0 +1,35 @@
+/**
+ * @fileoverview Application-wide constants.
+ */
+
+/** Number of expenses per page in the list view */
+export const EXPENSES_PER_PAGE = 20;
+
+/** Default category colors for the color picker */
+export const CATEGORY_COLORS = [
+  '#ef4444',
+  '#f59e0b',
+  '#10b981',
+  '#3b82f6',
+  '#8b5cf6',
+  '#ec4899',
+  '#06b6d4',
+  '#6b7280',
+] as const;
+
+/** Recurring interval labels in Portuguese */
+export const RECURRING_LABELS: Record<string, string> = {
+  daily: 'Diário',
+  weekly: 'Semanal',
+  monthly: 'Mensal',
+  yearly: 'Anual',
+};
+
+/** Navigation items for the sidebar */
+export const NAV_ITEMS = [
+  { href: '/', label: 'Dashboard', icon: 'LayoutDashboard' },
+  { href: '/expenses', label: 'Despesas', icon: 'Receipt' },
+  { href: '/categories', label: 'Categorias', icon: 'Tags' },
+  { href: '/export', label: 'Exportar', icon: 'Download' },
+  { href: '/settings', label: 'Configurações', icon: 'Settings' },
+] as const;
