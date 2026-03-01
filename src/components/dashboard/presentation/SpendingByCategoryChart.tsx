@@ -52,7 +52,7 @@ export function SpendingByCategoryChart({ data }: SpendingByCategoryChartProps) 
               ))}
             </Pie>
             <Tooltip
-              formatter={(value: number) => formatCurrency(value)}
+              formatter={(value) => formatCurrency(value as number)}
               contentStyle={{
                 borderRadius: '8px',
                 border: '1px solid #e5e7eb',

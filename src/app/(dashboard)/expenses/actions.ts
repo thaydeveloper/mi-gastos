@@ -55,7 +55,7 @@ export async function createExpense(formData: FormData) {
 
   const parsed = expenseSchema.safeParse(raw);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const dateStr = parsed.data.date.toISOString().split('T')[0];
@@ -107,7 +107,7 @@ export async function updateExpense(id: string, formData: FormData) {
 
   const parsed = expenseSchema.safeParse(raw);
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const dateStr = parsed.data.date.toISOString().split('T')[0];

@@ -28,7 +28,7 @@ export function RegisterFormContainer() {
 
     const result = registerSchema.safeParse({ name, email, password, confirmPassword });
     if (!result.success) {
-      setError(result.error.errors[0].message);
+      setError(result.error.issues[0].message);
       return;
     }
 

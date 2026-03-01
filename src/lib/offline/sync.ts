@@ -23,14 +23,16 @@ export async function processSyncQueue(): Promise<number> {
       switch (item.operation) {
         case 'create': {
           const { error } = await supabase
-            .from(item.table)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .from(item.table as any)
             .insert(item.payload as Record<string, unknown>);
           if (error) throw error;
           break;
         }
         case 'update': {
           const { error } = await supabase
-            .from(item.table)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .from(item.table as any)
             .update(item.payload as Record<string, unknown>)
             .eq('id', item.recordId);
           if (error) throw error;
@@ -38,7 +40,8 @@ export async function processSyncQueue(): Promise<number> {
         }
         case 'delete': {
           const { error } = await supabase
-            .from(item.table)
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            .from(item.table as any)
             .delete()
             .eq('id', item.recordId);
           if (error) throw error;

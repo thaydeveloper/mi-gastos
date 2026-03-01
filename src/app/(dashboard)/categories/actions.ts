@@ -27,7 +27,7 @@ export async function createCategory(formData: FormData) {
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const { error } = await supabase.from('categories').insert({
@@ -63,7 +63,7 @@ export async function updateCategory(id: string, formData: FormData) {
   });
 
   if (!parsed.success) {
-    return { error: parsed.error.errors[0].message };
+    return { error: parsed.error.issues[0].message };
   }
 
   const { error } = await supabase

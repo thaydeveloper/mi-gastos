@@ -49,7 +49,7 @@ export function SpendingOverTimeChart({ data }: SpendingOverTimeChartProps) {
               tickFormatter={(value) => `R$${(value / 1000).toFixed(0)}k`}
             />
             <Tooltip
-              formatter={(value: number) => [formatCurrency(value), 'Total']}
+              formatter={(value) => [formatCurrency(value as number), 'Total']}
               contentStyle={{
                 borderRadius: '8px',
                 border: '1px solid #e5e7eb',
