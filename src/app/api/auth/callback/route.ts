@@ -9,13 +9,10 @@ import { createServerClient } from '@supabase/ssr';
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
+  // if "next" is in param, use it as the redirect URL
+  const next = searchParams.get('next') ?? '/';
 
   if (code) {
-    // Create the redirect response first so we can attach cookies to it.
-    // Using next/headers here would set cookies separately from the redirect
-    // response, causing the browser to receive the redirect without the session.
-    const response = NextResponse.redirect(origin);
-
     const supabase = createServerClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -26,7 +23,7 @@ export async function GET(request: NextRequest) {
           },
           setAll(cookiesToSet) {
             cookiesToSet.forEach(({ name, value, options }) => {
-              response.cookies.set(name, value, options);
+              request.cookies.set(name, value);
             });
           },
         },
@@ -35,12 +32,17 @@ export async function GET(request: NextRequest) {
 
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      return response;
+      const forwardedHost = request.headers.get('x-forwarded-host'); // original origin before load balancer
+      const isLocalEnv = process.env.NODE_ENV === 'development';
+      if (isLocalEnv) {
+        // we can be sure that there is no load balancer in between, so no need to watch for X-Forwarded-Host
+        return NextResponse.redirect(`${origin}${next}`);
+      } else if (forwardedHost) {
+        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+      } else {
+        return NextResponse.redirect(`${origin}${next}`);
+      }
     }
-    console.error('[auth/callback] exchangeCodeForSession error:', error);
-    return NextResponse.redirect(
-      `${origin}/login?error=${encodeURIComponent(error.message)}`,
-    );
   }
 
   return NextResponse.redirect(`${origin}/login?error=no_code`);

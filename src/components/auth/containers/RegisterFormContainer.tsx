@@ -48,12 +48,23 @@ export function RegisterFormContainer() {
   };
 
   const handleOAuthLogin = async (provider: 'google' | 'github') => {
-    await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}/api/auth/callback`,
-      },
-    });
+    try {
+      setLoading(true);
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider,
+        options: {
+          redirectTo: `${window.location.origin}/api/auth/callback`,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+          },
+        },
+      });
+      if (error) throw error;
+    } catch (error) {
+      console.error('OAuth Error:', error);
+      setLoading(false);
+    }
   };
 
   return (
