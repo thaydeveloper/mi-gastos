@@ -28,6 +28,7 @@ export const DatePicker = forwardRef<HTMLInputElement, DatePickerProps>(
           ref={ref}
           id={id}
           type="date"
+          style={{ colorScheme: 'dark' }}
           className={cn(
             'w-full rounded-lg border px-3 py-2 text-sm outline-none transition-colors focus:ring-2 focus:ring-indigo-500/20',
             error
