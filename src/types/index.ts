@@ -21,15 +21,36 @@ export interface ExpenseWithCategory extends Expense {
   categories: Pick<Category, 'name' | 'color' | 'icon'> | null;
 }
 
+/** Income row type from Supabase */
+export type Income = Database['public']['Tables']['incomes']['Row'];
+
+/** Income insert type */
+export type IncomeInsert = Database['public']['Tables']['incomes']['Insert'];
+
+/** Bill row type from Supabase */
+export type Bill = Database['public']['Tables']['bills']['Row'];
+
+/** Bill insert type */
+export type BillInsert = Database['public']['Tables']['bills']['Insert'];
+
+/** Bill payment row type from Supabase */
+export type BillPayment = Database['public']['Tables']['bill_payments']['Row'];
+
+/** Bill with its current month payment status */
+export interface BillWithPayment extends Bill {
+  categories: Pick<Category, 'name' | 'color'> | null;
+  payment: BillPayment | null;
+}
+
 /** Push subscription row type */
 export type PushSubscription = Database['public']['Tables']['push_subscriptions']['Row'];
 
 /** Dashboard summary data */
 export interface DashboardSummary {
-  totalMonth: number;
-  averagePerDay: number;
-  expenseCount: number;
-  previousMonthTotal: number;
+  totalMonthExpenses: number;
+  totalMonthIncome: number;
+  balance: number;
+  previousMonthBalance: number;
 }
 
 /** Spending by category for charts */
@@ -39,10 +60,11 @@ export interface SpendingByCategory {
   value: number;
 }
 
-/** Spending over time for charts */
-export interface SpendingOverTime {
+/** Monthly income vs expenses for charts */
+export interface MonthlyBalance {
   month: string;
-  total: number;
+  expenses: number;
+  income: number;
 }
 
 /** Offline sync queue item */

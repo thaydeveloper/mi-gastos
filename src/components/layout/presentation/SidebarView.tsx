@@ -6,7 +6,7 @@
 'use client';
 
 import Link from 'next/link';
-import { LayoutDashboard, Receipt, Tags, Download, Settings, LogOut } from 'lucide-react';
+import { LayoutDashboard, Receipt, Tags, Download, Settings, LogOut, TrendingUp, CalendarClock } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const icons = {
@@ -15,6 +15,8 @@ const icons = {
   Tags,
   Download,
   Settings,
+  TrendingUp,
+  CalendarClock,
 } as const;
 
 /** Props for the SidebarView */

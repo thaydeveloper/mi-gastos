@@ -28,7 +28,9 @@ export const RECURRING_LABELS: Record<string, string> = {
 /** Navigation items for the sidebar */
 export const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: 'LayoutDashboard' },
+  { href: '/incomes', label: 'Ganhos', icon: 'TrendingUp' },
   { href: '/expenses', label: 'Despesas', icon: 'Receipt' },
+  { href: '/bills', label: 'Contas', icon: 'CalendarClock' },
   { href: '/categories', label: 'Categorias', icon: 'Tags' },
   { href: '/export', label: 'Exportar', icon: 'Download' },
   { href: '/settings', label: 'Configurações', icon: 'Settings' },
