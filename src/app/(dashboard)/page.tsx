@@ -22,14 +22,11 @@ export default async function DashboardPage() {
 
   const currentMonthStart = format(startOfMonth(now), 'yyyy-MM-dd');
   const currentMonthEnd = format(endOfMonth(now), 'yyyy-MM-dd');
-  const prevMonthStart = format(startOfMonth(subMonths(now, 1)), 'yyyy-MM-dd');
-  const prevMonthEnd = format(endOfMonth(subMonths(now, 1)), 'yyyy-MM-dd');
   const sixMonthsAgo = format(startOfMonth(subMonths(now, 5)), 'yyyy-MM-dd');
 
   const today = format(now, 'yyyy-MM-dd');
   const currentYear = now.getFullYear();
   const currentMonth = now.getMonth() + 1;
-  const currentDay = now.getDate();
 
   // 7 queries: 6-month data for charts, historical cumulative, recent expenses, bills + payments
   const [
@@ -100,14 +97,8 @@ export default async function DashboardPage() {
   const paidBillIds = new Set(
     (currentMonthPayments ?? []).filter((p) => p.paid).map((p) => p.bill_id),
   );
-  const unpaidBills = (activeBills ?? [])
-    .filter((b) => !paidBillIds.has(b.id))
-    .map((b) => ({
-      name: b.name,
-      amount: b.amount,
-      dueDay: b.due_day,
-      overdue: b.due_day < currentDay,
-    }));
+  const unpaidBills = (activeBills ?? []).filter((b) => !paidBillIds.has(b.id));
+  const totalUnpaidBills = unpaidBills.reduce((sum, b) => sum + b.amount, 0);
 
   // --- Pending incomes (future dates in current month) ---
   const pendingIncomes = (allIncomes ?? [])
@@ -194,7 +185,7 @@ export default async function DashboardPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <UpcomingBillsView bills={unpaidBills} />
+        <UpcomingBillsView total={totalUnpaidBills} count={unpaidBills.length} />
         <PendingIncomesView incomes={pendingIncomes} />
       </div>
 
