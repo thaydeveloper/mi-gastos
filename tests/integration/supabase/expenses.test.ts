@@ -26,6 +26,8 @@ jest.mock('@/lib/supabase/client', () => ({
   }),
 }));
 
+import { createClient } from '@/lib/supabase/client';
+
 // Build chainable mock
 const chainable = {
   select: mockSelect,
@@ -50,7 +52,6 @@ beforeEach(() => {
 
 describe('Expense operations with Supabase', () => {
   it('should build correct query for fetching expenses', () => {
-    const { createClient } = require('@/lib/supabase/client');
     const supabase = createClient();
 
     supabase.from('expenses').select('*, categories(name, color)').order('date', { ascending: false });
@@ -61,7 +62,6 @@ describe('Expense operations with Supabase', () => {
   });
 
   it('should build correct query for filtered expenses', () => {
-    const { createClient } = require('@/lib/supabase/client');
     const supabase = createClient();
 
     supabase
@@ -79,7 +79,6 @@ describe('Expense operations with Supabase', () => {
   });
 
   it('should build correct insert for new expense', () => {
-    const { createClient } = require('@/lib/supabase/client');
     const supabase = createClient();
 
     const newExpense = {
@@ -98,7 +97,6 @@ describe('Expense operations with Supabase', () => {
   });
 
   it('should build correct delete query', () => {
-    const { createClient } = require('@/lib/supabase/client');
     const supabase = createClient();
 
     supabase.from('expenses').delete().eq('id', 'expense-123');
@@ -108,7 +106,6 @@ describe('Expense operations with Supabase', () => {
   });
 
   it('should build correct update query', () => {
-    const { createClient } = require('@/lib/supabase/client');
     const supabase = createClient();
 
     supabase

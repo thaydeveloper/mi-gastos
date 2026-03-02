@@ -5,23 +5,19 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useOfflineSync } from '@/lib/hooks/useOfflineSync';
 import { SettingsView } from '../presentation/SettingsView';
 
 /** Container managing settings logic */
 export function SettingsContainer() {
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [notificationsSupported, setNotificationsSupported] = useState(false);
+  const [notificationsSupported] = useState(
+    () => typeof window !== 'undefined' && 'Notification' in window && 'serviceWorker' in navigator,
+  );
+  const [notificationsEnabled, setNotificationsEnabled] = useState(
+    () => typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted',
+  );
   const { isOnline, pendingCount, isSyncing, syncNow } = useOfflineSync();
-
-  useEffect(() => {
-    const supported = 'Notification' in window && 'serviceWorker' in navigator;
-    setNotificationsSupported(supported);
-    if (supported) {
-      setNotificationsEnabled(Notification.permission === 'granted');
-    }
-  }, []);
 
   const handleEnableNotifications = async () => {
     const permission = await Notification.requestPermission();
