@@ -24,50 +24,56 @@ export default async function DashboardPage() {
   const prevMonthEnd = format(endOfMonth(subMonths(now, 1)), 'yyyy-MM-dd');
   const sixMonthsAgo = format(startOfMonth(subMonths(now, 5)), 'yyyy-MM-dd');
 
-  // 3 queries instead of 8 — derive current/prev month from the 6-month range in JS
-  const [{ data: allExpenses }, { data: allIncomes }, { data: recentExpenses }] = await Promise.all(
-    [
-      // All expenses last 6 months with category join (covers monthly chart + category pie + totals)
-      supabase
-        .from('expenses')
-        .select('amount, date, categories(name, color)')
-        .gte('date', sixMonthsAgo)
-        .lte('date', currentMonthEnd),
-      // All incomes last 6 months (covers monthly chart + totals)
-      supabase
-        .from('incomes')
-        .select('amount, date')
-        .gte('date', sixMonthsAgo)
-        .lte('date', currentMonthEnd),
-      // Recent 5 expenses for the table
-      supabase
-        .from('expenses')
-        .select('*, categories(name, color, icon)')
-        .order('date', { ascending: false })
-        .limit(5),
-    ],
-  );
+  // 5 queries: 6-month data for charts, historical data for cumulative balance, recent expenses
+  const [
+    { data: allExpenses },
+    { data: allIncomes },
+    { data: recentExpenses },
+    { data: historicalExpenses },
+    { data: historicalIncomes },
+  ] = await Promise.all([
+    // All expenses last 6 months with category join (covers monthly chart + category pie + totals)
+    supabase
+      .from('expenses')
+      .select('amount, date, categories(name, color)')
+      .gte('date', sixMonthsAgo)
+      .lte('date', currentMonthEnd),
+    // All incomes last 6 months (covers monthly chart + totals)
+    supabase
+      .from('incomes')
+      .select('amount, date')
+      .gte('date', sixMonthsAgo)
+      .lte('date', currentMonthEnd),
+    // Recent 5 expenses for the table
+    supabase
+      .from('expenses')
+      .select('*, categories(name, color, icon)')
+      .order('date', { ascending: false })
+      .limit(5),
+    // All expenses before current month (for cumulative balance)
+    supabase.from('expenses').select('amount').lt('date', currentMonthStart),
+    // All incomes before current month (for cumulative balance)
+    supabase.from('incomes').select('amount').lt('date', currentMonthStart),
+  ]);
 
   // --- Derive totals from in-memory data ---
   const currentExpenses = (allExpenses ?? []).filter(
     (e) => e.date >= currentMonthStart && e.date <= currentMonthEnd,
   );
-  const prevExpenses = (allExpenses ?? []).filter(
-    (e) => e.date >= prevMonthStart && e.date <= prevMonthEnd,
-  );
   const currentIncomes = (allIncomes ?? []).filter(
     (e) => e.date >= currentMonthStart && e.date <= currentMonthEnd,
-  );
-  const prevIncomes = (allIncomes ?? []).filter(
-    (e) => e.date >= prevMonthStart && e.date <= prevMonthEnd,
   );
 
   const totalMonthExpenses = currentExpenses.reduce((sum, e) => sum + e.amount, 0);
   const totalMonthIncome = currentIncomes.reduce((sum, e) => sum + e.amount, 0);
-  const balance = totalMonthIncome - totalMonthExpenses;
+
+  // Cumulative balance: all historical income - all historical expenses before this month
   const previousMonthBalance =
-    prevIncomes.reduce((sum, e) => sum + e.amount, 0) -
-    prevExpenses.reduce((sum, e) => sum + e.amount, 0);
+    (historicalIncomes ?? []).reduce((sum, e) => sum + e.amount, 0) -
+    (historicalExpenses ?? []).reduce((sum, e) => sum + e.amount, 0);
+
+  // Current balance carries over the cumulative previous balance
+  const balance = previousMonthBalance + totalMonthIncome - totalMonthExpenses;
 
   // --- Category breakdown (current month only) ---
   const categoryMap = new Map<string, { name: string; color: string; total: number }>();
