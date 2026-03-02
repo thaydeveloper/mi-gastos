@@ -4,6 +4,8 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { SummaryCardsView } from '@/components/dashboard/presentation/SummaryCardsView';
+import { UpcomingBillsView } from '@/components/dashboard/presentation/UpcomingBillsView';
+import { PendingIncomesView } from '@/components/dashboard/presentation/PendingIncomesView';
 import { SpendingByCategoryChart } from '@/components/dashboard/presentation/SpendingByCategoryChart';
 import { SpendingOverTimeChart } from '@/components/dashboard/presentation/SpendingOverTimeChart';
 import { RecentExpensesView } from '@/components/dashboard/presentation/RecentExpensesView';
@@ -24,13 +26,20 @@ export default async function DashboardPage() {
   const prevMonthEnd = format(endOfMonth(subMonths(now, 1)), 'yyyy-MM-dd');
   const sixMonthsAgo = format(startOfMonth(subMonths(now, 5)), 'yyyy-MM-dd');
 
-  // 5 queries: 6-month data for charts, historical data for cumulative balance, recent expenses
+  const today = format(now, 'yyyy-MM-dd');
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1;
+  const currentDay = now.getDate();
+
+  // 7 queries: 6-month data for charts, historical cumulative, recent expenses, bills + payments
   const [
     { data: allExpenses },
     { data: allIncomes },
     { data: recentExpenses },
     { data: historicalExpenses },
     { data: historicalIncomes },
+    { data: activeBills },
+    { data: currentMonthPayments },
   ] = await Promise.all([
     // All expenses last 6 months with category join (covers monthly chart + category pie + totals)
     supabase
@@ -38,10 +47,10 @@ export default async function DashboardPage() {
       .select('amount, date, categories(name, color)')
       .gte('date', sixMonthsAgo)
       .lte('date', currentMonthEnd),
-    // All incomes last 6 months (covers monthly chart + totals)
+    // All incomes last 6 months (covers monthly chart + totals + pending incomes)
     supabase
       .from('incomes')
-      .select('amount, date')
+      .select('amount, date, description, source')
       .gte('date', sixMonthsAgo)
       .lte('date', currentMonthEnd),
     // Recent 5 expenses for the table
@@ -54,6 +63,18 @@ export default async function DashboardPage() {
     supabase.from('expenses').select('amount').lt('date', currentMonthStart),
     // All incomes before current month (for cumulative balance)
     supabase.from('incomes').select('amount').lt('date', currentMonthStart),
+    // Active bills
+    supabase
+      .from('bills')
+      .select('id, name, amount, due_day')
+      .eq('is_active', true)
+      .order('due_day', { ascending: true }),
+    // Current month bill payments
+    supabase
+      .from('bill_payments')
+      .select('bill_id, paid')
+      .eq('year', currentYear)
+      .eq('month', currentMonth),
   ]);
 
   // --- Derive totals from in-memory data ---
@@ -74,6 +95,28 @@ export default async function DashboardPage() {
 
   // Current balance carries over the cumulative previous balance
   const balance = previousMonthBalance + totalMonthIncome - totalMonthExpenses;
+
+  // --- Unpaid bills for current month ---
+  const paidBillIds = new Set(
+    (currentMonthPayments ?? []).filter((p) => p.paid).map((p) => p.bill_id),
+  );
+  const unpaidBills = (activeBills ?? [])
+    .filter((b) => !paidBillIds.has(b.id))
+    .map((b) => ({
+      name: b.name,
+      amount: b.amount,
+      dueDay: b.due_day,
+      overdue: b.due_day < currentDay,
+    }));
+
+  // --- Pending incomes (future dates in current month) ---
+  const pendingIncomes = (allIncomes ?? [])
+    .filter((e) => e.date >= currentMonthStart && e.date <= currentMonthEnd && e.date > today)
+    .map((e) => ({
+      description: (e as { description?: string }).description ?? 'Ganho',
+      amount: e.amount,
+      date: e.date,
+    }));
 
   // --- Category breakdown (current month only) ---
   const categoryMap = new Map<string, { name: string; color: string; total: number }>();
@@ -149,6 +192,11 @@ export default async function DashboardPage() {
         balance={balance}
         previousMonthBalance={previousMonthBalance}
       />
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <UpcomingBillsView bills={unpaidBills} />
+        <PendingIncomesView incomes={pendingIncomes} />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
         <SpendingByCategoryChart data={spendingByCategory} />
