@@ -38,13 +38,20 @@ export function IncomeTableView({ incomes, onDelete }: IncomeTableViewProps) {
             <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Data</th>
             <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Descrição</th>
             <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Fonte</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">Valor</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">Ações</th>
+            <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">
+              Valor
+            </th>
+            <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">
+              Ações
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
           {incomes.map((income) => (
-            <tr key={income.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
+            <tr
+              key={income.id}
+              className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
+            >
               <td className="whitespace-nowrap px-4 py-3 text-gray-600 dark:text-gray-400">
                 {formatDate(income.date)}
               </td>
@@ -53,9 +60,7 @@ export function IncomeTableView({ incomes, onDelete }: IncomeTableViewProps) {
                   {income.description}
                 </div>
                 {income.is_recurring && income.recurring_interval && (
-                  <Badge className="mt-1">
-                    {RECURRING_LABELS[income.recurring_interval]}
-                  </Badge>
+                  <Badge className="mt-1">{RECURRING_LABELS[income.recurring_interval]}</Badge>
                 )}
               </td>
               <td className="px-4 py-3">

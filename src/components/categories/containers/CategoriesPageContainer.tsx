@@ -7,7 +7,11 @@
 
 import { useState } from 'react';
 import type { Category } from '@/types';
-import { createCategory, updateCategory, deleteCategory } from '@/app/(dashboard)/categories/actions';
+import {
+  createCategory,
+  updateCategory,
+  deleteCategory,
+} from '@/app/(dashboard)/categories/actions';
 import { CategoryListView } from '../presentation/CategoryListView';
 import { CategoryFormView } from '../presentation/CategoryFormView';
 import { Button } from '@/components/ui/Button';
@@ -93,11 +97,7 @@ export function CategoriesPageContainer({ initialCategories }: CategoriesPageCon
         </Button>
       </div>
 
-      <CategoryListView
-        categories={initialCategories}
-        onEdit={openEdit}
-        onDelete={handleDelete}
-      />
+      <CategoryListView categories={initialCategories} onEdit={openEdit} onDelete={handleDelete} />
 
       <CategoryFormView
         open={modalOpen}

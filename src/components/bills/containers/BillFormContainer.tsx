@@ -38,9 +38,7 @@ export function BillFormContainer({ bill, categories }: BillFormContainerProps) 
     formData.set('category_id', categoryId);
     formData.set('notes', notes);
 
-    const result = isEditing
-      ? await updateBill(bill.id, formData)
-      : await createBill(formData);
+    const result = isEditing ? await updateBill(bill.id, formData) : await createBill(formData);
 
     if (result?.error) {
       setError(result.error);

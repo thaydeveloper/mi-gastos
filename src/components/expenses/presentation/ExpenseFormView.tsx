@@ -115,7 +115,10 @@ export function ExpenseFormView({
         />
 
         <div>
-          <label htmlFor="notes" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="notes"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Notas (opcional)
           </label>
           <textarea
@@ -136,7 +139,10 @@ export function ExpenseFormView({
             onChange={(e) => onRecurringChange(e.target.checked)}
             className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
           />
-          <label htmlFor="is_recurring" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="is_recurring"
+            className="text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Despesa recorrente
           </label>
         </div>

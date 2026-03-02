@@ -63,7 +63,8 @@ export default async function ExpensesPage({ searchParams }: ExpensesPageProps) 
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Despesas</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {count ?? 0} despesa{(count ?? 0) !== 1 ? 's' : ''} encontrada{(count ?? 0) !== 1 ? 's' : ''}
+            {count ?? 0} despesa{(count ?? 0) !== 1 ? 's' : ''} encontrada
+            {(count ?? 0) !== 1 ? 's' : ''}
           </p>
         </div>
         <Link href="/expenses/new">

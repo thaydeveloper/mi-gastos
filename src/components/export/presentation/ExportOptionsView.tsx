@@ -65,11 +65,7 @@ export function ExportOptionsView({
         </p>
 
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Button
-            onClick={onExportPDF}
-            disabled={loading || expenseCount === 0}
-            className="flex-1"
-          >
+          <Button onClick={onExportPDF} disabled={loading || expenseCount === 0} className="flex-1">
             <FileText size={16} />
             {loading ? 'Gerando...' : 'Exportar PDF'}
           </Button>

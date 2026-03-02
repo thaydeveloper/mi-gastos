@@ -34,9 +34,11 @@ export function LoginFormContainer() {
     });
 
     if (authError) {
-      setError(authError.message === 'Invalid login credentials'
-        ? 'Email ou senha incorretos'
-        : authError.message);
+      setError(
+        authError.message === 'Invalid login credentials'
+          ? 'Email ou senha incorretos'
+          : authError.message,
+      );
       setLoading(false);
       return;
     }

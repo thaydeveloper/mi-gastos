@@ -30,14 +30,9 @@ export function CategoryListView({ categories, onEdit, onDelete }: CategoryListV
       {categories.map((cat) => (
         <Card key={cat.id} className="flex items-center justify-between p-4">
           <div className="flex items-center gap-3">
-            <div
-              className="h-4 w-4 rounded-full"
-              style={{ backgroundColor: cat.color }}
-            />
+            <div className="h-4 w-4 rounded-full" style={{ backgroundColor: cat.color }} />
             <span className="font-medium text-gray-900 dark:text-white">{cat.name}</span>
-            {cat.icon && (
-              <Badge className="text-xs">{cat.icon}</Badge>
-            )}
+            {cat.icon && <Badge className="text-xs">{cat.icon}</Badge>}
           </div>
           <div className="flex gap-2">
             <button

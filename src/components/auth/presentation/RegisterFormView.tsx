@@ -56,7 +56,10 @@ export function RegisterFormView({
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="name"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Nome
           </label>
           <input
@@ -71,7 +74,10 @@ export function RegisterFormView({
         </div>
 
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="email"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Email
           </label>
           <input
@@ -86,7 +92,10 @@ export function RegisterFormView({
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="password"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Senha
           </label>
           <input
@@ -101,7 +110,10 @@ export function RegisterFormView({
         </div>
 
         <div>
-          <label htmlFor="confirmPassword" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="confirmPassword"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Confirmar Senha
           </label>
           <input

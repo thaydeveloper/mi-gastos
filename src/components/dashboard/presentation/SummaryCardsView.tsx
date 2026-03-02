@@ -68,7 +68,8 @@ export function SummaryCardsView({
                   : 'text-rose-600 dark:text-rose-400'
               }`}
             >
-              {isPositiveBalance ? '+' : ''}{formatCurrency(balance)}
+              {isPositiveBalance ? '+' : ''}
+              {formatCurrency(balance)}
             </p>
           </div>
           <div
@@ -102,7 +103,8 @@ export function SummaryCardsView({
                   : 'text-rose-600 dark:text-rose-400'
               }`}
             >
-              {isPrevPositive ? '+' : ''}{formatCurrency(previousMonthBalance)}
+              {isPrevPositive ? '+' : ''}
+              {formatCurrency(previousMonthBalance)}
             </p>
           </div>
           <div className="rounded-lg bg-purple-50 p-3 dark:bg-purple-950">

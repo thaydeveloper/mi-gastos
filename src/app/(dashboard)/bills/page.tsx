@@ -49,7 +49,10 @@ export default async function BillsPage() {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Contas Mensais</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {new Date(year, month - 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+            {new Date(year, month - 1).toLocaleDateString('pt-BR', {
+              month: 'long',
+              year: 'numeric',
+            })}
           </p>
         </div>
         <Link href="/bills/new">

@@ -19,11 +19,7 @@ export default async function EditExpensePage({ params }: EditExpensePageProps) 
   const supabase = await createClient();
 
   const [{ data: expense }, { data: categories }] = await Promise.all([
-    supabase
-      .from('expenses')
-      .select('*, categories(name, color, icon)')
-      .eq('id', id)
-      .single(),
+    supabase.from('expenses').select('*, categories(name, color, icon)').eq('id', id).single(),
     supabase.from('categories').select('*').order('name'),
   ]);
 

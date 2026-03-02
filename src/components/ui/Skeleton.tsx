@@ -11,9 +11,5 @@ interface SkeletonProps {
 
 /** Animated loading placeholder */
 export function Skeleton({ className }: SkeletonProps) {
-  return (
-    <div
-      className={cn('animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700', className)}
-    />
-  );
+  return <div className={cn('animate-pulse rounded-lg bg-gray-200 dark:bg-gray-700', className)} />;
 }

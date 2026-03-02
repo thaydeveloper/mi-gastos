@@ -11,10 +11,7 @@ export const metadata = {
 
 export default async function CategoriesPage() {
   const supabase = await createClient();
-  const { data: categories } = await supabase
-    .from('categories')
-    .select('*')
-    .order('name');
+  const { data: categories } = await supabase.from('categories').select('*').order('name');
 
   return <CategoriesPageContainer initialCategories={categories ?? []} />;
 }

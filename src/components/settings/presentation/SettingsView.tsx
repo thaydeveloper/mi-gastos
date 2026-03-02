@@ -92,7 +92,12 @@ export function SettingsView({
               <p className="text-sm text-amber-600 dark:text-amber-400">
                 {pendingSyncCount} operação(ões) pendente(s)
               </p>
-              <Button variant="secondary" size="sm" onClick={onSyncNow} disabled={!isOnline || isSyncing}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={onSyncNow}
+                disabled={!isOnline || isSyncing}
+              >
                 <RefreshCw size={14} className={isSyncing ? 'animate-spin' : ''} />
                 {isSyncing ? 'Sincronizando...' : 'Sincronizar'}
               </Button>
@@ -100,9 +105,7 @@ export function SettingsView({
           )}
 
           {pendingSyncCount === 0 && (
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Tudo sincronizado!
-            </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Tudo sincronizado!</p>
           )}
         </div>
       </Card>

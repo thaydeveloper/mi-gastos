@@ -49,7 +49,10 @@ export function LoginFormView({
 
       <form onSubmit={onSubmit} className="space-y-4">
         <div>
-          <label htmlFor="email" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="email"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Email
           </label>
           <input
@@ -64,7 +67,10 @@ export function LoginFormView({
         </div>
 
         <div>
-          <label htmlFor="password" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="password"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Senha
           </label>
           <input

@@ -31,18 +31,24 @@ export function BillsView({ bills, totalAmount, paidAmount, onToggle, onDelete }
           <p className="mt-1 text-xl font-bold text-gray-900 dark:text-white">
             {formatCurrency(totalAmount)}
           </p>
-          <p className="mt-0.5 text-xs text-gray-400">{bills.length} conta{bills.length !== 1 ? 's' : ''}</p>
+          <p className="mt-0.5 text-xs text-gray-400">
+            {bills.length} conta{bills.length !== 1 ? 's' : ''}
+          </p>
         </Card>
         <Card className="p-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">Já Pagas</p>
           <p className="mt-1 text-xl font-bold text-emerald-600 dark:text-emerald-400">
             {formatCurrency(paidAmount)}
           </p>
-          <p className="mt-0.5 text-xs text-gray-400">{paidCount} paga{paidCount !== 1 ? 's' : ''}</p>
+          <p className="mt-0.5 text-xs text-gray-400">
+            {paidCount} paga{paidCount !== 1 ? 's' : ''}
+          </p>
         </Card>
         <Card className="p-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">Ainda a Pagar</p>
-          <p className={`mt-1 text-xl font-bold ${remainingAmount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
+          <p
+            className={`mt-1 text-xl font-bold ${remainingAmount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}
+          >
             {formatCurrency(remainingAmount)}
           </p>
           <p className="mt-0.5 text-xs text-gray-400">
@@ -77,8 +83,8 @@ export function BillsView({ bills, totalAmount, paidAmount, onToggle, onDelete }
                   isPaid
                     ? 'border-emerald-200 bg-emerald-50/30 dark:border-emerald-900 dark:bg-emerald-950/20'
                     : isOverdue
-                    ? 'border-rose-200 bg-rose-50/30 dark:border-rose-900 dark:bg-rose-950/20'
-                    : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900'
+                      ? 'border-rose-200 bg-rose-50/30 dark:border-rose-900 dark:bg-rose-950/20'
+                      : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900'
                 }`}
               >
                 {/* Toggle button */}
@@ -97,7 +103,9 @@ export function BillsView({ bills, totalAmount, paidAmount, onToggle, onDelete }
                 {/* Bill info */}
                 <div className="flex-1">
                   <div className="flex items-center gap-2">
-                    <p className={`font-medium ${isPaid ? 'text-gray-400 line-through dark:text-gray-600' : 'text-gray-900 dark:text-white'}`}>
+                    <p
+                      className={`font-medium ${isPaid ? 'text-gray-400 line-through dark:text-gray-600' : 'text-gray-900 dark:text-white'}`}
+                    >
                       {bill.name}
                     </p>
                     {isOverdue && (
@@ -115,14 +123,17 @@ export function BillsView({ bills, totalAmount, paidAmount, onToggle, onDelete }
                     Vence dia {bill.due_day}
                     {bill.categories && (
                       <span className="ml-2">
-                        · <span style={{ color: bill.categories.color }}>{bill.categories.name}</span>
+                        ·{' '}
+                        <span style={{ color: bill.categories.color }}>{bill.categories.name}</span>
                       </span>
                     )}
                   </p>
                 </div>
 
                 {/* Amount */}
-                <p className={`text-lg font-bold ${isPaid ? 'text-gray-400 dark:text-gray-600' : 'text-gray-900 dark:text-white'}`}>
+                <p
+                  className={`text-lg font-bold ${isPaid ? 'text-gray-400 dark:text-gray-600' : 'text-gray-900 dark:text-white'}`}
+                >
                   {formatCurrency(bill.amount)}
                 </p>
 

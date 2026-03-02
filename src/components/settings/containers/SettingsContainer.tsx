@@ -15,7 +15,10 @@ export function SettingsContainer() {
     () => typeof window !== 'undefined' && 'Notification' in window && 'serviceWorker' in navigator,
   );
   const [notificationsEnabled, setNotificationsEnabled] = useState(
-    () => typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted',
+    () =>
+      typeof window !== 'undefined' &&
+      'Notification' in window &&
+      Notification.permission === 'granted',
   );
   const { isOnline, pendingCount, isSyncing, syncNow } = useOfflineSync();
 

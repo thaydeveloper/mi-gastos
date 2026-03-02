@@ -38,13 +38,20 @@ export function ExpenseTableView({ expenses, onDelete }: ExpenseTableViewProps) 
             <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Data</th>
             <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Descrição</th>
             <th className="px-4 py-3 font-medium text-gray-500 dark:text-gray-400">Categoria</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">Valor</th>
-            <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">Ações</th>
+            <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">
+              Valor
+            </th>
+            <th className="px-4 py-3 text-right font-medium text-gray-500 dark:text-gray-400">
+              Ações
+            </th>
           </tr>
         </thead>
         <tbody className="divide-y divide-gray-200 dark:divide-gray-800">
           {expenses.map((expense) => (
-            <tr key={expense.id} className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50">
+            <tr
+              key={expense.id}
+              className="transition-colors hover:bg-gray-50 dark:hover:bg-gray-800/50"
+            >
               <td className="whitespace-nowrap px-4 py-3 text-gray-600 dark:text-gray-400">
                 {formatDate(expense.date)}
               </td>
@@ -53,9 +60,7 @@ export function ExpenseTableView({ expenses, onDelete }: ExpenseTableViewProps) 
                   {expense.description}
                 </div>
                 {expense.is_recurring && expense.recurring_interval && (
-                  <Badge className="mt-1">
-                    {RECURRING_LABELS[expense.recurring_interval]}
-                  </Badge>
+                  <Badge className="mt-1">{RECURRING_LABELS[expense.recurring_interval]}</Badge>
                 )}
               </td>
               <td className="px-4 py-3">

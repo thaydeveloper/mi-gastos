@@ -38,7 +38,8 @@ export default async function IncomesPage({ searchParams }: IncomesPageProps) {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Ganhos</h1>
           <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-            {count ?? 0} ganho{(count ?? 0) !== 1 ? 's' : ''} encontrado{(count ?? 0) !== 1 ? 's' : ''}
+            {count ?? 0} ganho{(count ?? 0) !== 1 ? 's' : ''} encontrado
+            {(count ?? 0) !== 1 ? 's' : ''}
           </p>
         </div>
         <Link href="/incomes/new">

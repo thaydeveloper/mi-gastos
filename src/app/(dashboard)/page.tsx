@@ -25,30 +25,28 @@ export default async function DashboardPage() {
   const sixMonthsAgo = format(startOfMonth(subMonths(now, 5)), 'yyyy-MM-dd');
 
   // 3 queries instead of 8 — derive current/prev month from the 6-month range in JS
-  const [
-    { data: allExpenses },
-    { data: allIncomes },
-    { data: recentExpenses },
-  ] = await Promise.all([
-    // All expenses last 6 months with category join (covers monthly chart + category pie + totals)
-    supabase
-      .from('expenses')
-      .select('amount, date, categories(name, color)')
-      .gte('date', sixMonthsAgo)
-      .lte('date', currentMonthEnd),
-    // All incomes last 6 months (covers monthly chart + totals)
-    supabase
-      .from('incomes')
-      .select('amount, date')
-      .gte('date', sixMonthsAgo)
-      .lte('date', currentMonthEnd),
-    // Recent 5 expenses for the table
-    supabase
-      .from('expenses')
-      .select('*, categories(name, color, icon)')
-      .order('date', { ascending: false })
-      .limit(5),
-  ]);
+  const [{ data: allExpenses }, { data: allIncomes }, { data: recentExpenses }] = await Promise.all(
+    [
+      // All expenses last 6 months with category join (covers monthly chart + category pie + totals)
+      supabase
+        .from('expenses')
+        .select('amount, date, categories(name, color)')
+        .gte('date', sixMonthsAgo)
+        .lte('date', currentMonthEnd),
+      // All incomes last 6 months (covers monthly chart + totals)
+      supabase
+        .from('incomes')
+        .select('amount, date')
+        .gte('date', sixMonthsAgo)
+        .lte('date', currentMonthEnd),
+      // Recent 5 expenses for the table
+      supabase
+        .from('expenses')
+        .select('*, categories(name, color, icon)')
+        .order('date', { ascending: false })
+        .limit(5),
+    ],
+  );
 
   // --- Derive totals from in-memory data ---
   const currentExpenses = (allExpenses ?? []).filter(
@@ -99,14 +97,28 @@ export default async function DashboardPage() {
   }
   (allExpenses ?? []).forEach((e) => {
     const key = e.date.substring(0, 7);
-    if (expenseMonthlyMap.has(key)) expenseMonthlyMap.set(key, expenseMonthlyMap.get(key)! + e.amount);
+    if (expenseMonthlyMap.has(key))
+      expenseMonthlyMap.set(key, expenseMonthlyMap.get(key)! + e.amount);
   });
   (allIncomes ?? []).forEach((e) => {
     const key = e.date.substring(0, 7);
     if (incomeMonthlyMap.has(key)) incomeMonthlyMap.set(key, incomeMonthlyMap.get(key)! + e.amount);
   });
 
-  const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  const monthNames = [
+    'Jan',
+    'Fev',
+    'Mar',
+    'Abr',
+    'Mai',
+    'Jun',
+    'Jul',
+    'Ago',
+    'Set',
+    'Out',
+    'Nov',
+    'Dez',
+  ];
   const monthlyBalance: MonthlyBalance[] = Array.from(expenseMonthlyMap.keys()).map((month) => {
     const [y, m] = month.split('-');
     return {

@@ -6,7 +6,16 @@
 'use client';
 
 import Link from 'next/link';
-import { LayoutDashboard, Receipt, Tags, Download, Settings, LogOut, TrendingUp, CalendarClock } from 'lucide-react';
+import {
+  LayoutDashboard,
+  Receipt,
+  Tags,
+  Download,
+  Settings,
+  LogOut,
+  TrendingUp,
+  CalendarClock,
+} from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const icons = {
@@ -39,9 +48,7 @@ export function SidebarView({ pathname, userName, items, onLogout }: SidebarView
         <div className="border-b border-gray-200 px-6 py-5 dark:border-gray-800">
           <h1 className="text-xl font-bold text-indigo-600">Meus Gastos</h1>
           {userName && (
-            <p className="mt-1 truncate text-sm text-gray-500 dark:text-gray-400">
-              {userName}
-            </p>
+            <p className="mt-1 truncate text-sm text-gray-500 dark:text-gray-400">{userName}</p>
           )}
         </div>
 

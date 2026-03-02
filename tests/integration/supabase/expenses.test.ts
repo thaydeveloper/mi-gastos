@@ -54,7 +54,10 @@ describe('Expense operations with Supabase', () => {
   it('should build correct query for fetching expenses', () => {
     const supabase = createClient();
 
-    supabase.from('expenses').select('*, categories(name, color)').order('date', { ascending: false });
+    supabase
+      .from('expenses')
+      .select('*, categories(name, color)')
+      .order('date', { ascending: false });
 
     expect(mockFrom).toHaveBeenCalledWith('expenses');
     expect(mockSelect).toHaveBeenCalledWith('*, categories(name, color)');

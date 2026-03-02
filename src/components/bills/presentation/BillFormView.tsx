@@ -102,7 +102,10 @@ export function BillFormView({
         />
 
         <div>
-          <label htmlFor="notes" className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          <label
+            htmlFor="notes"
+            className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300"
+          >
             Notas (opcional)
           </label>
           <textarea
