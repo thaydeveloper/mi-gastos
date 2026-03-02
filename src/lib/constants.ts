@@ -25,7 +25,7 @@ export const RECURRING_LABELS: Record<string, string> = {
   yearly: 'Anual',
 };
 
-/** Navigation items for the sidebar */
+/** Navigation items for the sidebar (all routes) */
 export const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: 'LayoutDashboard' },
   { href: '/incomes', label: 'Ganhos', icon: 'TrendingUp' },
@@ -34,4 +34,13 @@ export const NAV_ITEMS = [
   { href: '/categories', label: 'Categorias', icon: 'Tags' },
   { href: '/export', label: 'Exportar', icon: 'Download' },
   { href: '/settings', label: 'Configurações', icon: 'Settings' },
+] as const;
+
+/** Navigation items shown in mobile bottom bar (max 5 to fit the screen) */
+export const MOBILE_NAV_ITEMS = [
+  { href: '/', label: 'Dashboard', icon: 'LayoutDashboard' },
+  { href: '/incomes', label: 'Ganhos', icon: 'TrendingUp' },
+  { href: '/expenses', label: 'Despesas', icon: 'Receipt' },
+  { href: '/bills', label: 'Contas', icon: 'CalendarClock' },
+  { href: '/settings', label: 'Config', icon: 'Settings' },
 ] as const;
