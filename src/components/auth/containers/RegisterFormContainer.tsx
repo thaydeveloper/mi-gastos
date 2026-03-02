@@ -6,7 +6,6 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { registerSchema } from '@/lib/schemas/auth';
 import { RegisterFormView } from '../presentation/RegisterFormView';
@@ -18,7 +17,6 @@ export function RegisterFormContainer() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const supabase = createClient();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -46,8 +44,7 @@ export function RegisterFormContainer() {
       return;
     }
 
-    router.push('/');
-    router.refresh();
+    window.location.href = '/';
   };
 
   const handleOAuthLogin = async (provider: 'google' | 'github') => {
