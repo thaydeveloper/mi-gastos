@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { loginSchema } from '@/lib/schemas/auth';
 import { LoginFormView } from '../presentation/LoginFormView';
+import { getURL } from '@/lib/utils/get-url';
 
 /** Container that manages login logic and delegates rendering to LoginFormView */
 export function LoginFormContainer() {
@@ -51,7 +52,9 @@ export function LoginFormContainer() {
   const handleOAuthLogin = async (provider: 'google' | 'github') => {
     await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
+      options: {
+        redirectTo: `${getURL()}/api/auth/callback`,
+      },
     });
   };
 

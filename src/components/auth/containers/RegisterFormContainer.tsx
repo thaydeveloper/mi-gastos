@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { registerSchema } from '@/lib/schemas/auth';
 import { RegisterFormView } from '../presentation/RegisterFormView';
+import { getURL } from '@/lib/utils/get-url';
 
 /** Container that manages registration logic and delegates rendering to RegisterFormView */
 export function RegisterFormContainer() {
@@ -54,7 +55,9 @@ export function RegisterFormContainer() {
   const handleOAuthLogin = async (provider: 'google' | 'github') => {
     await supabase.auth.signInWithOAuth({
       provider,
-      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
+      options: {
+        redirectTo: `${getURL()}/api/auth/callback`,
+      },
     });
   };
 
