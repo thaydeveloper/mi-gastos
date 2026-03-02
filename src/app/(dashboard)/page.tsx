@@ -75,6 +75,7 @@ export default async function DashboardPage() {
   ]);
 
   // --- Derive totals from in-memory data ---
+  // All entries in the current month (for charts/category breakdown)
   const currentExpenses = (allExpenses ?? []).filter(
     (e) => e.date >= currentMonthStart && e.date <= currentMonthEnd,
   );
@@ -90,8 +91,16 @@ export default async function DashboardPage() {
     (historicalIncomes ?? []).reduce((sum, e) => sum + e.amount, 0) -
     (historicalExpenses ?? []).reduce((sum, e) => sum + e.amount, 0);
 
-  // Current balance carries over the cumulative previous balance
-  const balance = previousMonthBalance + totalMonthIncome - totalMonthExpenses;
+  // Realized totals up to today (only past/present dates count for current balance)
+  const realizedExpenses = currentExpenses
+    .filter((e) => e.date <= today)
+    .reduce((sum, e) => sum + e.amount, 0);
+  const realizedIncome = currentIncomes
+    .filter((e) => e.date <= today)
+    .reduce((sum, e) => sum + e.amount, 0);
+
+  // Current balance = cumulative previous + only what actually entered/exited up to today
+  const balance = previousMonthBalance + realizedIncome - realizedExpenses;
 
   // --- Unpaid bills for current month ---
   const paidBillIds = new Set(
