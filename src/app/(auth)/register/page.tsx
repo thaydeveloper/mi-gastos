@@ -4,6 +4,8 @@
 
 import { RegisterFormContainer } from '@/components/auth/containers/RegisterFormContainer';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata = {
   title: 'Criar Conta - Meus Gastos',
 };
