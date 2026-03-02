@@ -51,6 +51,13 @@ export function RegisterFormContainer() {
     router.refresh();
   };
 
+  const handleOAuthLogin = async (provider: 'google' | 'github') => {
+    await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo: `${window.location.origin}/api/auth/callback` },
+    });
+  };
+
   return (
     <RegisterFormView
       name={name}
@@ -64,6 +71,8 @@ export function RegisterFormContainer() {
       onPasswordChange={setPassword}
       onConfirmPasswordChange={setConfirmPassword}
       onSubmit={handleSubmit}
+      onGoogleLogin={() => handleOAuthLogin('google')}
+      onGithubLogin={() => handleOAuthLogin('github')}
     />
   );
 }

@@ -19,6 +19,8 @@ interface RegisterFormViewProps {
   onPasswordChange: (value: string) => void;
   onConfirmPasswordChange: (value: string) => void;
   onSubmit: (e: React.FormEvent) => void;
+  onGoogleLogin: () => void;
+  onGithubLogin: () => void;
 }
 
 /** Renders the registration form UI */
@@ -34,6 +36,8 @@ export function RegisterFormView({
   onPasswordChange,
   onConfirmPasswordChange,
   onSubmit,
+  onGoogleLogin,
+  onGithubLogin,
 }: RegisterFormViewProps) {
   return (
     <div className="rounded-xl border border-gray-200 bg-white p-8 shadow-sm dark:border-gray-800 dark:bg-gray-900">
@@ -119,6 +123,29 @@ export function RegisterFormView({
           {loading ? 'Criando conta...' : 'Criar Conta'}
         </button>
       </form>
+
+      <div className="my-6 flex items-center gap-3">
+        <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+        <span className="text-xs text-gray-500">ou continue com</span>
+        <div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
+      </div>
+
+      <div className="flex gap-3">
+        <button
+          type="button"
+          onClick={onGoogleLogin}
+          className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          Google
+        </button>
+        <button
+          type="button"
+          onClick={onGithubLogin}
+          className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+        >
+          GitHub
+        </button>
+      </div>
 
       <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
         Já tem conta?{' '}
