@@ -10,8 +10,6 @@ import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import { loginSchema } from '@/lib/schemas/auth';
 import { LoginFormView } from '../presentation/LoginFormView';
-import { getURL } from '@/lib/utils/get-url';
-
 /** Container that manages login logic and delegates rendering to LoginFormView */
 export function LoginFormContainer() {
   const [email, setEmail] = useState('');
@@ -53,7 +51,7 @@ export function LoginFormContainer() {
     await supabase.auth.signInWithOAuth({
       provider,
       options: {
-        redirectTo: `${getURL()}/api/auth/callback`,
+        redirectTo: `${window.location.origin}/api/auth/callback`,
       },
     });
   };
