@@ -99,15 +99,18 @@ export default async function DashboardPage() {
     .filter((e) => e.date <= today)
     .reduce((sum, e) => sum + e.amount, 0);
 
-  // Current balance = cumulative previous + only what actually entered/exited up to today
-  const balance = previousMonthBalance + realizedIncome - realizedExpenses;
-
-  // --- Unpaid bills for current month ---
+  // --- Bills paid/unpaid split for current month ---
   const paidBillIds = new Set(
     (currentMonthPayments ?? []).filter((p) => p.paid).map((p) => p.bill_id),
   );
   const unpaidBills = (activeBills ?? []).filter((b) => !paidBillIds.has(b.id));
   const totalUnpaidBills = unpaidBills.reduce((sum, b) => sum + b.amount, 0);
+  const totalPaidBills = (activeBills ?? [])
+    .filter((b) => paidBillIds.has(b.id))
+    .reduce((sum, b) => sum + b.amount, 0);
+
+  // Current balance = cumulative previous + realized income - realized expenses - paid bills
+  const balance = previousMonthBalance + realizedIncome - realizedExpenses - totalPaidBills;
 
   // --- Pending incomes (future dates in current month) ---
   const pendingIncomes = (allIncomes ?? [])

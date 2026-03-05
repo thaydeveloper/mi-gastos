@@ -16,7 +16,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
   const userName = user?.user_metadata?.name ?? user?.email ?? null;
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-gray-950">
       <SidebarContainer userName={userName} />
       <DashboardShell userName={userName}>{children}</DashboardShell>
       <MobileNavContainer />

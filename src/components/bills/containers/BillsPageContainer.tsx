@@ -4,6 +4,7 @@
 
 'use client';
 
+import { useOptimistic, useTransition } from 'react';
 import type { BillWithPayment } from '@/types';
 import { toggleBillPayment, deleteBill } from '@/app/(dashboard)/bills/actions';
 import { BillsView } from '../presentation/BillsView';
@@ -23,9 +24,29 @@ export function BillsPageContainer({
   totalAmount,
   paidAmount,
 }: BillsPageContainerProps) {
-  const handleToggle = async (billId: string, currentlyPaid: boolean) => {
-    const result = await toggleBillPayment(billId, year, month, currentlyPaid);
-    if (result?.error) alert(result.error);
+  const [, startTransition] = useTransition();
+
+  // Optimistic state: immediately reflects toggle before server responds
+  const [optimisticBills, setOptimisticBill] = useOptimistic(
+    bills,
+    (current: BillWithPayment[], { billId, paid }: { billId: string; paid: boolean }) =>
+      current.map((b) =>
+        b.id === billId
+          ? { ...b, payment: { ...(b.payment ?? {}), paid } as BillWithPayment['payment'] }
+          : b,
+      ),
+  );
+
+  const optimisticPaidAmount = optimisticBills
+    .filter((b) => b.payment?.paid)
+    .reduce((sum, b) => sum + b.amount, 0);
+
+  const handleToggle = (billId: string, currentlyPaid: boolean) => {
+    startTransition(async () => {
+      setOptimisticBill({ billId, paid: !currentlyPaid });
+      const result = await toggleBillPayment(billId, year, month, currentlyPaid);
+      if (result?.error) alert(result.error);
+    });
   };
 
   const handleDelete = async (id: string) => {
@@ -36,9 +57,9 @@ export function BillsPageContainer({
 
   return (
     <BillsView
-      bills={bills}
+      bills={optimisticBills}
       totalAmount={totalAmount}
-      paidAmount={paidAmount}
+      paidAmount={optimisticPaidAmount}
       onToggle={handleToggle}
       onDelete={handleDelete}
     />

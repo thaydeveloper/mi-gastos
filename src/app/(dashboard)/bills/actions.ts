@@ -114,7 +114,7 @@ export async function deleteBill(id: string) {
 
 /**
  * Toggles the paid status of a bill for a given month/year.
- * If no payment record exists, creates one. Otherwise toggles.
+ * Uses upsert on the unique (bill_id, year, month) constraint — single DB round-trip.
  */
 export async function toggleBillPayment(
   billId: string,
@@ -129,36 +129,20 @@ export async function toggleBillPayment(
 
   if (!user) throw new Error('Não autenticado');
 
-  const { data: existing } = await supabase
-    .from('bill_payments')
-    .select('id')
-    .eq('bill_id', billId)
-    .eq('year', year)
-    .eq('month', month)
-    .single();
-
-  if (existing) {
-    const { error } = await supabase
-      .from('bill_payments')
-      .update({
-        paid: !currentlyPaid,
-        paid_at: !currentlyPaid ? new Date().toISOString() : null,
-      })
-      .eq('id', existing.id);
-
-    if (error) return { error: error.message };
-  } else {
-    const { error } = await supabase.from('bill_payments').insert({
+  const newPaid = !currentlyPaid;
+  const { error } = await supabase.from('bill_payments').upsert(
+    {
       bill_id: billId,
       user_id: user.id,
       year,
       month,
-      paid: true,
-      paid_at: new Date().toISOString(),
-    });
+      paid: newPaid,
+      paid_at: newPaid ? new Date().toISOString() : null,
+    },
+    { onConflict: 'bill_id,year,month' },
+  );
 
-    if (error) return { error: error.message };
-  }
+  if (error) return { error: error.message };
 
   revalidatePath('/bills');
   return { success: true };
