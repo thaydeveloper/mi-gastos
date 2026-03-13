@@ -28,6 +28,7 @@ export const RECURRING_LABELS: Record<string, string> = {
 /** Navigation items for the sidebar (all routes) */
 export const NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: 'LayoutDashboard' },
+  { href: '/ai-consultant', label: 'Consultor IA', icon: 'Bot' },
   { href: '/incomes', label: 'Ganhos', icon: 'TrendingUp' },
   { href: '/expenses', label: 'Despesas', icon: 'Receipt' },
   { href: '/bills', label: 'Contas', icon: 'CalendarClock' },
@@ -39,8 +40,8 @@ export const NAV_ITEMS = [
 /** Navigation items shown in mobile bottom bar (max 5 to fit the screen) */
 export const MOBILE_NAV_ITEMS = [
   { href: '/', label: 'Dashboard', icon: 'LayoutDashboard' },
+  { href: '/ai-consultant', label: 'IA', icon: 'Bot' },
   { href: '/incomes', label: 'Ganhos', icon: 'TrendingUp' },
   { href: '/expenses', label: 'Despesas', icon: 'Receipt' },
   { href: '/bills', label: 'Contas', icon: 'CalendarClock' },
-  { href: '/settings', label: 'Config', icon: 'Settings' },
 ] as const;

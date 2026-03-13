@@ -9,6 +9,7 @@ import { PendingIncomesView } from '@/components/dashboard/presentation/PendingI
 import { SpendingByCategoryChart } from '@/components/dashboard/presentation/SpendingByCategoryChart';
 import { SpendingOverTimeChart } from '@/components/dashboard/presentation/SpendingOverTimeChart';
 import { RecentExpensesView } from '@/components/dashboard/presentation/RecentExpensesView';
+import { AIAdvisorCard } from '@/components/dashboard/presentation/AIAdvisorCard';
 import { startOfMonth, endOfMonth, subMonths, format } from 'date-fns';
 import type { SpendingByCategory, MonthlyBalance } from '@/types';
 
@@ -198,7 +199,7 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <UpcomingBillsView total={totalUnpaidBills} count={unpaidBills.length} />
-        <PendingIncomesView incomes={pendingIncomes} />
+        <AIAdvisorCard />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
