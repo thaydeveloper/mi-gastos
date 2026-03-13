@@ -24,6 +24,10 @@ export const metadata: Metadata = {
   },
   description: 'Gerenciador de despesas pessoais',
   manifest: '/manifest.json',
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/icons/icon-192.png',
+  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
