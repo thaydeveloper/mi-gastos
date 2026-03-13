@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useCompletion } from 'ai/react';
+import { useCompletion } from '@ai-sdk/react';
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Bot, Sparkles, Send, Home, Car, TrendingUp, ShieldCheck, Loader2 } from 'lucide-react';

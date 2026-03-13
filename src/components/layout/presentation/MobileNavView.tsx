@@ -13,6 +13,7 @@ import {
   Settings,
   TrendingUp,
   CalendarClock,
+  Bot,
 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
@@ -24,6 +25,7 @@ const icons = {
   Settings,
   TrendingUp,
   CalendarClock,
+  Bot,
 } as const;
 
 /** Props for MobileNavView */
