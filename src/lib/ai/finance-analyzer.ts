@@ -86,22 +86,26 @@ export async function getFinancialSummary() {
     return acc;
   }, {});
 
+  const round = (num: number) => Math.round(num * 100) / 100;
+
   return {
     periodo: format(now, 'MMMM yyyy'),
     resumo_atual: {
-      saldo_anterior_acumulado: previousMonthBalance,
-      receitas_recebidas_no_mes: totalRealizedIncome,
-      despesas_realizadas_no_mes: totalRealizedExpenses,
-      contas_ja_pagas_no_mes: totalPaidBills,
-      saldo_do_mes_vigente: saldoMesVigente,
+      saldo_anterior_acumulado: round(previousMonthBalance),
+      receitas_recebidas_no_mes: round(totalRealizedIncome),
+      despesas_realizadas_no_mes: round(totalRealizedExpenses),
+      contas_ja_pagas_no_mes: round(totalPaidBills),
+      saldo_do_mes_vigente: round(saldoMesVigente),
       
       // Projeções
-      receitas_a_receber: totalPendingIncome,
-      contas_a_pagar_pendentes: totalUnpaidBills,
-      projecao_saldo_final: projecaoSaldoFinal,
+      receitas_a_receber: round(totalPendingIncome),
+      contas_a_pagar_pendentes: round(totalUnpaidBills),
+      projecao_saldo_final: round(projecaoSaldoFinal),
     },
-    gastos_por_categoria: expensesByCategory,
-    contas_vencendo: unpaidBills.map(b => ({ nome: b.name, valor: b.amount, dia: b.due_day })),
-    receitas_esperadas: pendingIncomes.map(i => ({ descricao: i.description || i.source, valor: i.amount, data: i.date }))
+    gastos_por_categoria: Object.fromEntries(
+      Object.entries(expensesByCategory).map(([cat, val]) => [cat, round(val)])
+    ),
+    contas_vencendo: unpaidBills.map(b => ({ nome: b.name, valor: round(Number(b.amount)), dia: b.due_day })),
+    receitas_esperadas: pendingIncomes.map(i => ({ descricao: i.description || i.source, valor: round(Number(i.amount)), data: i.date }))
   };
 }
