@@ -7,26 +7,37 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Bot, Sparkles, Send, Home, Car, TrendingUp, ShieldCheck, Loader2, MessageSquare } from 'lucide-react';
+import { Bot, Sparkles, Send, Home, Car, TrendingUp, ShieldCheck, Loader2, MessageSquare, Search, X } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const GOALS = [
-  { id: 'general', label: 'Gestão Geral', icon: TrendingUp, color: 'text-blue-500' },
-  { id: 'house', label: 'Comprar Casa', icon: Home, color: 'text-purple-500' },
-  { id: 'car', label: 'Comprar Carro', icon: Car, color: 'text-orange-500' },
-  { id: 'emergency', label: 'Reserva de Emergência', icon: ShieldCheck, color: 'text-green-500' },
+  { id: 'general', label: 'Gestão Geral', icon: TrendingUp, color: 'text-blue-500', prompt: 'Faça uma análise geral da minha saúde financeira e sugira próximos passos.' },
+  { id: 'house', label: 'Comprar Casa', icon: Home, color: 'text-purple-500', prompt: 'Analise minhas finanças com foco no objetivo de comprar uma casa no futuro.' },
+  { id: 'car', label: 'Comprar Carro', icon: Car, color: 'text-orange-500', prompt: 'Como posso me organizar para comprar um carro sem comprometer minha estabilidade?' },
+  { id: 'emergency', label: 'Reserva de Emergência', icon: ShieldCheck, color: 'text-green-500', prompt: 'Como posso montar uma reserva de emergência sólida com base nos meus gastos atuais?' },
+  { id: 'invest', label: 'Onde Investir?', icon: TrendingUp, color: 'text-indigo-500', prompt: 'Baseado no meu saldo e sobras, quais seriam as melhores opções de investimento agora?' },
+  { id: 'debt', label: 'Quitar Dívidas', icon: ShieldCheck, color: 'text-red-500', prompt: 'Minhas contas estão pesadas. Como posso priorizar o pagamento de dívidas e economizar?' },
+  { id: 'savings', label: 'Aumentar Poupança', icon: TrendingUp, color: 'text-teal-500', prompt: 'Quais categorias de gastos eu posso reduzir para aumentar minha taxa de poupança mensal?' },
+  { id: 'travel', label: 'Planejar Viagem', icon: Car, color: 'text-cyan-500', prompt: 'Quero planejar uma viagem. Quanto tempo levaria para economizar R$ 5.000,00 com meu perfil atual?' },
 ];
 
 export default function AIConsultantPage() {
   const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
   const [customPrompt, setCustomPrompt] = useState('');
   const [completion, setCompletion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleGenerate = useCallback(async () => {
-    const goalLabel = GOALS.find(g => g.id === selectedGoal)?.label || 'Gestão Geral';
-    const payload = { goal: goalLabel, customPrompt: customPrompt.trim() || undefined };
+  const handleGenerate = useCallback(async (overriddenPrompt?: string, overriddenGoal?: string) => {
+    const goalToUse = overriddenGoal || selectedGoal;
+    const promptToUse = overriddenPrompt || customPrompt;
+
+    const goalLabel = GOALS.find(g => g.id === goalToUse)?.label || 'Gestão Geral';
+    const payload = { 
+      goal: goalLabel, 
+      customPrompt: promptToUse.trim() || undefined 
+    };
     console.log('Sending AI Payload:', payload);
 
     setIsLoading(true);
@@ -68,10 +79,23 @@ export default function AIConsultantPage() {
     }
   }, [selectedGoal, customPrompt]);
 
+  const onSelectGoal = (goalId: string) => {
+    const goal = GOALS.find(g => g.id === goalId);
+    if (!goal) return;
+    
+    setSelectedGoal(goalId);
+    handleGenerate(goal.prompt, goalId);
+  };
+
+  const filteredGoals = GOALS.filter(g => 
+    g.label.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  // Removed automatic fetch on mount to save requests
   // Initial fetch on mount
-  useEffect(() => {
-    handleGenerate();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  // useEffect(() => {
+  //   handleGenerate();
+  // }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -85,23 +109,49 @@ export default function AIConsultantPage() {
         </p>
       </div>
 
-      {/* Goal Selection */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {GOALS.map((goal) => (
-          <button
-            key={goal.id}
-            onClick={() => setSelectedGoal(goal.id)}
-            className={cn(
-              "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 text-center",
-              selectedGoal === goal.id 
-                ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-950/30" 
-                : "border-gray-100 dark:border-gray-800 hover:border-indigo-300"
-            )}
-          >
-            <goal.icon className={cn("w-6 h-6", goal.color)} />
-            <span className="text-xs font-medium dark:text-gray-200">{goal.label}</span>
-          </button>
-        ))}
+      {/* Goal Selection with Search */}
+      <div className="space-y-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
+          <input
+            type="text"
+            placeholder="Buscar objetivo ou tipo de conselho..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 rounded-xl border-2 border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 text-sm focus:border-indigo-500 outline-none transition-all"
+          />
+          {searchQuery && (
+            <button 
+              onClick={() => setSearchQuery('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {filteredGoals.map((goal) => (
+            <button
+              key={goal.id}
+              onClick={() => onSelectGoal(goal.id)}
+              className={cn(
+                "flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all gap-2 text-center",
+                selectedGoal === goal.id 
+                  ? "border-indigo-600 bg-indigo-50 dark:bg-indigo-950/30" 
+                  : "border-gray-100 dark:border-gray-800 hover:border-indigo-300"
+              )}
+            >
+              <goal.icon className={cn("w-6 h-6", goal.color)} />
+              <span className="text-xs font-medium dark:text-gray-200">{goal.label}</span>
+            </button>
+          ))}
+          {filteredGoals.length === 0 && (
+            <div className="col-span-full py-8 text-center text-gray-400 text-sm italic">
+              Nenhum objetivo encontrado para "{searchQuery}"
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Custom Prompt */}
@@ -120,15 +170,14 @@ export default function AIConsultantPage() {
         </div>
       </div>
 
-      {/* Action Button */}
       <div className="flex justify-center">
         <button
-          onClick={handleGenerate}
+          onClick={() => handleGenerate()}
           disabled={isLoading}
           className="flex items-center gap-2 px-8 py-3 bg-indigo-600 text-white rounded-full font-semibold hover:bg-indigo-700 transition-colors disabled:opacity-50 shadow-lg shadow-indigo-500/20"
         >
           {isLoading ? <Loader2 className="animate-spin" /> : <Sparkles />}
-          {isLoading ? 'Analisando finanças...' : 'Gerar Nova Análise'}
+          {isLoading ? 'Analisando finanças...' : 'Gerar Análise Personalizada'}
         </button>
       </div>
 
