@@ -10,6 +10,7 @@ import { TrendingUp, TrendingDown, Calculator, Wallet } from 'lucide-react';
 interface SummaryCardsViewProps {
   totalMonthExpenses: number;
   totalMonthIncome: number;
+  totalPendingIncome: number;
   balance: number;
   previousMonthBalance: number;
 }
@@ -18,6 +19,7 @@ interface SummaryCardsViewProps {
 export function SummaryCardsView({
   totalMonthExpenses,
   totalMonthIncome,
+  totalPendingIncome,
   balance,
   previousMonthBalance,
 }: SummaryCardsViewProps) {
@@ -25,18 +27,33 @@ export function SummaryCardsView({
   const isPrevPositive = previousMonthBalance >= 0;
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
       {/* Total de Ganhos */}
       <Card className="p-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Total de Ganhos</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Total Recebido</p>
             <p className="mt-1 text-2xl font-bold text-emerald-600 dark:text-emerald-400">
               {formatCurrency(totalMonthIncome)}
             </p>
           </div>
           <div className="rounded-lg bg-emerald-50 p-3 dark:bg-emerald-950">
             <TrendingUp className="text-emerald-600 dark:text-emerald-400" size={24} />
+          </div>
+        </div>
+      </Card>
+
+      {/* A Receber */}
+      <Card className="p-5 border-emerald-100 dark:border-emerald-900/30">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-sm text-gray-500 dark:text-gray-400">A Receber</p>
+            <p className="mt-1 text-2xl font-bold text-blue-600 dark:text-blue-400">
+              {formatCurrency(totalPendingIncome)}
+            </p>
+          </div>
+          <div className="rounded-lg bg-blue-50 p-3 dark:bg-blue-950">
+            <Calculator className="text-blue-600 dark:text-blue-400" size={24} />
           </div>
         </div>
       </Card>
@@ -60,7 +77,7 @@ export function SummaryCardsView({
       <Card className="p-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Saldo do Mês</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">Saldo do Mês Vigente</p>
             <p
               className={`mt-1 text-2xl font-bold ${
                 isPositiveBalance

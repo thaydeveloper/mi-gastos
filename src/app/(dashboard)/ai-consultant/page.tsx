@@ -5,9 +5,9 @@
 
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { Bot, Sparkles, Send, Home, Car, TrendingUp, ShieldCheck, Loader2 } from 'lucide-react';
+import { Bot, Sparkles, Send, Home, Car, TrendingUp, ShieldCheck, Loader2, MessageSquare } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
 
 const GOALS = [
@@ -18,23 +18,27 @@ const GOALS = [
 ];
 
 export default function AIConsultantPage() {
-  const [selectedGoal, setSelectedGoal] = useState('general');
+  const [selectedGoal, setSelectedGoal] = useState<string | null>(null);
+  const [customPrompt, setCustomPrompt] = useState('');
   const [completion, setCompletion] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleGenerate = useCallback(async () => {
-    const goalLabel = GOALS.find(g => g.id === selectedGoal)?.label;
+    const goalLabel = GOALS.find(g => g.id === selectedGoal)?.label || 'Gestão Geral';
+    const payload = { goal: goalLabel, customPrompt: customPrompt.trim() || undefined };
+    console.log('Sending AI Payload:', payload);
 
     setIsLoading(true);
     setCompletion('');
     setError(null);
+    setCustomPrompt(''); // Clear field after send
 
     try {
       const response = await fetch('/api/ai-finance', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ goal: goalLabel }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -62,17 +66,22 @@ export default function AIConsultantPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [selectedGoal]);
+  }, [selectedGoal, customPrompt]);
+
+  // Initial fetch on mount
+  useEffect(() => {
+    handleGenerate();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
           <Bot className="text-indigo-600" />
-          Consultor AI Financeiro
+          Agente Especialista em Investimentos
         </h1>
         <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-          Análise inteligente baseada nos seus ganhos e despesas reais.
+          Análise técnica de ativos e saúde financeira baseada em dados reais.
         </p>
       </div>
 
@@ -93,6 +102,22 @@ export default function AIConsultantPage() {
             <span className="text-xs font-medium dark:text-gray-200">{goal.label}</span>
           </button>
         ))}
+      </div>
+
+      {/* Custom Prompt */}
+      <div className="relative">
+        <div className="flex items-start gap-2">
+          <div className="flex-1 relative">
+            <MessageSquare size={18} className="absolute left-4 top-4 text-gray-400" />
+            <textarea
+              value={customPrompt}
+              onChange={(e) => setCustomPrompt(e.target.value)}
+              placeholder="Pergunte algo específico... Ex: 'Como economizar R$ 500 por mês?' ou 'Devo investir em renda fixa ou variável?'"
+              rows={2}
+              className="w-full pl-11 pr-4 py-3 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-200 placeholder-gray-400 focus:border-indigo-500 focus:outline-none resize-none text-sm transition-colors"
+            />
+          </div>
+        </div>
       </div>
 
       {/* Action Button */}

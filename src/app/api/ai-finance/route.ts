@@ -6,35 +6,55 @@ export const maxDuration = 30;
 
 export async function POST(req: Request) {
   try {
-    const { goal } = await req.json();
+    const { goal, customPrompt } = await req.json();
+    console.log('>>> AI ROUTE RECEIVED:', { goal, hasPrompt: !!customPrompt, promptLength: customPrompt?.length });
+    
     const financialData = await getFinancialSummary();
 
     const prompt = `
-      Você é um consultor financeiro pessoal experiente e amigável para o app "Meus Gastos".
-      Analise os seguintes dados financeiros do usuário e forneça dicas práticas.
+      Você é um AGENTE ESPECIALISTA EM FINANÇAS E INVESTIMENTOS de alto nível.
+      Sua missão é fornecer análises precisas, baseadas em dados e conselhos estratégicos de alocação de capital.
 
-      DADOS FINANCEIROS (${financialData.periodo}):
-      - Receita este mês: R$ ${financialData.resumo_atual.total_receitas}
-      - Despesas este mês: R$ ${financialData.resumo_atual.total_despesas}
-      - Saldo atual: R$ ${financialData.resumo_atual.saldo}
+      DADOS FINANCEIROS CONSOLIDADOS (${financialData.periodo}):
+      - SALDO ACUMULADO (Meses Anteriores): R$ ${financialData.resumo_atual.saldo_anterior_acumulado}
+      - TOTAL RECEBIDO NO MÊS: R$ ${financialData.resumo_atual.receitas_recebidas_no_mes}
+      - A RECEBER (Futuros deste mês): R$ ${financialData.resumo_atual.receitas_a_receber}
+      - DESPESAS PAGAS NO MÊS: R$ ${financialData.resumo_atual.despesas_realizadas_no_mes}
+      - CONTAS A PAGAR (Boletos pendentes): R$ ${financialData.resumo_atual.contas_a_pagar_pendentes}
+      - TOTAL DE CONTAS JÁ PAGAS: R$ ${financialData.resumo_atual.contas_ja_pagas_no_mes}
       
-      COMPARAÇÃO:
-      - Receita mês passado: R$ ${financialData.resumo_mes_anterior.total_receitas}
-      - Despesas mês passado: R$ ${financialData.resumo_mes_anterior.total_despesas}
+      FLUXO DE CAIXA ATUALIZADO:
+      - SALDO DO MÊS VIGENTE (Realizado agora): R$ ${financialData.resumo_atual.saldo_do_mes_vigente}
+      - PROJEÇÃO DE SALDO FINAL: R$ ${financialData.resumo_atual.projecao_saldo_final}
+
+      ⚠️ ATENÇÃO: Use o "SALDO DO MÊS VIGENTE" (R$ ${financialData.resumo_atual.saldo_do_mes_vigente}) como sua base de capital disponível agora. Refira-se a ele como "Saldo do Mês Vigente".
 
       GASTOS POR CATEGORIA:
       ${JSON.stringify(financialData.gastos_por_categoria, null, 2)}
 
-      META DO USUÁRIO: ${goal || 'Gestão geral e saúde financeira'}
+      LISTA DE CONTAS VENCENDO ESTE MÊS:
+      ${JSON.stringify(financialData.contas_vencendo, null, 2)}
 
-      INSTRUÇÕES:
-      1. Seja direto e motive o usuário.
-      2. Divida sua resposta em 3 seções curtas:
-         - 🏦 **Análise Geral**: Como está o saldo e a comparação com o mês passado.
-         - 🎯 **Dica para sua Meta**: Conselhos específicos para "${goal || 'Gestão geral'}". Se envolver compra de casa/carro, mencione reserva de emergência e financiamento vs economia.
-         - 💡 **Ação Prática**: Uma única ação que o usuário pode tomar hoje.
-      3. Use Markdown para formatar.
-      4. Responda em Português do Brasil.
+      META DO USUÁRIO: ${goal || 'Otimização de Investimentos'}
+
+      ESTRUTURA DA RESPOSTA (OBRIGATÓRIA):
+      ${customPrompt ? `
+      1. 🔍 **Sua Pergunta**: Responda com profundidade técnica à pergunta: "${customPrompt}".
+      2. 📊 **Diagnóstico Especialista**: Analise o SALDO DO MÊS VIGENTE (R$ ${financialData.resumo_atual.saldo_do_mes_vigente}) vs projeção final. Destaque o impacto das contas a pagar e receitas a receber.
+      3. 📈 **Estratégia de Investimentos**: Baseado no SALDO DO MÊS VIGENTE, sugira onde alocar.
+      4. 💡 **Ação Prática**: Uma decisão financeira imediata.
+      ` : `
+      1. 📊 **Diagnóstico Especialista**: Analise a saúde financeira atual usando o SALDO DO MÊS VIGENTE (R$ ${financialData.resumo_atual.saldo_do_mes_vigente}). Mencione especificamente os R$ ${financialData.resumo_atual.receitas_a_receber} que o usuário ainda tem a receber.
+      2. 📉 **Gestão de Passivos**: Comente sobre as contas a pagar pendentes (R$ ${financialData.resumo_atual.contas_a_pagar_pendentes}) e como isso afeta o fluxo.
+      3. 📈 **Estratégia de Investimentos**: Sugira uma alocação baseada no SALDO DO MÊS VIGENTE.
+      4. 💡 **Ação Prática**: Uma decisão financeira imediata.
+      `}
+
+      REGRAS DE OURO:
+      - Use terminologia de mercado financeiro adequada (SELIC, CDI, Liquidez, Diversificação).
+      - Seja analítico, não apenas motivador.
+      - Use Markdown com títulos em negrito.
+      - Responda em Português do Brasil.
     `.trim();
 
     const groq = createGroq({
@@ -43,7 +63,7 @@ export async function POST(req: Request) {
 
     console.log('>>> EXECUTANDO ROTA AI-FINANCE COM GROQ <<<');
     const result = streamText({
-      model: groq('llama-3.3-70b-versatile'),
+      model: groq('llama-3.3-70b-versatile') as any,
       prompt,
     });
 

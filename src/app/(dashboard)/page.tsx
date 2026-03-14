@@ -121,6 +121,7 @@ export default async function DashboardPage() {
       amount: e.amount,
       date: e.date,
     }));
+  const totalPendingIncome = pendingIncomes.reduce((sum, e) => sum + e.amount, 0);
 
   // --- Category breakdown (current month only) ---
   const categoryMap = new Map<string, { name: string; color: string; total: number }>();
@@ -193,6 +194,7 @@ export default async function DashboardPage() {
       <SummaryCardsView
         totalMonthExpenses={totalMonthExpenses}
         totalMonthIncome={totalMonthIncome}
+        totalPendingIncome={totalPendingIncome}
         balance={balance}
         previousMonthBalance={previousMonthBalance}
       />
