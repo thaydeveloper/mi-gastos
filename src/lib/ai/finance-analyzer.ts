@@ -14,12 +14,13 @@ export async function getFinancialSummary() {
   const lastMonthStart = format(startOfMonth(subMonths(now, 1)), 'yyyy-MM-dd');
   const lastMonthEnd = format(endOfMonth(subMonths(now, 1)), 'yyyy-MM-dd');
 
+  console.log('Fetching financial data for AI...');
   const [
-    { data: currentExpenses },
-    { data: currentIncomes },
-    { data: lastMonthExpenses },
-    { data: lastMonthIncomes },
-    { data: categories }
+    { data: currentExpenses, error: e1 },
+    { data: currentIncomes, error: i1 },
+    { data: lastMonthExpenses, error: e2 },
+    { data: lastMonthIncomes, error: i2 },
+    { data: categories, error: c1 }
   ] = await Promise.all([
     supabase.from('expenses').select('amount, category_id, description').gte('date', currentMonthStart).lte('date', currentMonthEnd),
     supabase.from('incomes').select('amount, source, description').gte('date', currentMonthStart).lte('date', currentMonthEnd),
@@ -27,6 +28,10 @@ export async function getFinancialSummary() {
     supabase.from('incomes').select('amount').gte('date', lastMonthStart).lte('date', lastMonthEnd),
     supabase.from('categories').select('id, name')
   ]);
+
+  if (e1 || i1 || e2 || i2 || c1) {
+    console.error('Supabase query errors:', { e1, i1, e2, i2, c1 });
+  }
 
   const catMap = new Map((categories || []).map(c => [c.id, c.name]));
 

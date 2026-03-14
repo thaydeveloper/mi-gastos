@@ -1,4 +1,4 @@
-import { google } from '@ai-sdk/google';
+import { createGroq } from '@ai-sdk/groq';
 import { streamText } from 'ai';
 import { getFinancialSummary } from '@/lib/ai/finance-analyzer';
 
@@ -37,15 +37,27 @@ export async function POST(req: Request) {
       4. Responda em Português do Brasil.
     `.trim();
 
+    const groq = createGroq({
+      apiKey: process.env.GROQ_API_KEY,
+    });
+
+    console.log('>>> EXECUTANDO ROTA AI-FINANCE COM GROQ <<<');
     const result = streamText({
-      model: google('gemini-1.5-flash'),
+      model: groq('llama-3.3-70b-versatile'),
       prompt,
     });
 
     return result.toTextStreamResponse();
-  } catch (error) {
-    console.error('AI API Error:', error);
-    return new Response(JSON.stringify({ error: 'Falha ao processar análise financeira' }), {
+  } catch (error: any) {
+    console.error('AI API Error Detail:', {
+      message: error.message,
+      stack: error.stack,
+      cause: error.cause
+    });
+    return new Response(JSON.stringify({ 
+      error: 'Falha ao processar análise financeira',
+      details: error.message 
+    }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
     });

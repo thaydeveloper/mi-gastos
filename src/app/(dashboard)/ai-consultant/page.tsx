@@ -1,11 +1,11 @@
 /**
  * @fileoverview AI Financial Consultant page.
+ * Uses plain fetch + ReadableStream to avoid SDK version conflicts.
  */
 
 'use client';
 
-import { useCompletion } from '@ai-sdk/react';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Bot, Sparkles, Send, Home, Car, TrendingUp, ShieldCheck, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils/cn';
@@ -19,14 +19,50 @@ const GOALS = [
 
 export default function AIConsultantPage() {
   const [selectedGoal, setSelectedGoal] = useState('general');
-  const { completion, complete, isLoading, error } = useCompletion({
-    api: '/api/ai/finance',
-  });
+  const [completion, setCompletion] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleGenerate = () => {
+  const handleGenerate = useCallback(async () => {
     const goalLabel = GOALS.find(g => g.id === selectedGoal)?.label;
-    complete('', { body: { goal: goalLabel } });
-  };
+
+    setIsLoading(true);
+    setCompletion('');
+    setError(null);
+
+    try {
+      const response = await fetch('/api/ai-finance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ goal: goalLabel }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.details || errorData.error || `Erro ${response.status}`);
+      }
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('Stream não disponível');
+
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value, { stream: true });
+        fullText += chunk;
+        setCompletion(fullText);
+      }
+    } catch (err: any) {
+      console.error('Erro na IA:', err);
+      setError(err.message || 'Erro desconhecido ao gerar análise.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [selectedGoal]);
 
   return (
     <div className="mx-auto max-w-4xl space-y-8">
@@ -81,22 +117,35 @@ export default function AIConsultantPage() {
             </span>
             {isLoading && <span className="text-xs text-indigo-500 animate-pulse">Inteligência trabalhando...</span>}
           </div>
-          <div className="p-6 prose dark:prose-invert max-w-none prose-indigo">
+          <div className="p-6 text-gray-800 dark:text-gray-100 min-h-[150px]">
             {error && (
-              <div className="text-red-500 p-4 border border-red-200 bg-red-50 rounded-lg text-sm">
-                Ocorreu um erro ao gerar a análise. Verifique sua chave de API ou tente novamente.
+              <div className="text-red-500 p-4 border border-red-200 bg-red-50 dark:bg-red-950/20 dark:border-red-800 rounded-lg text-sm mb-4">
+                Ocorreu um erro: {error}
               </div>
             )}
-            {!error && (
-              <ReactMarkdown>
-                {completion || 'Aguardando seus dados para começar...'}
-              </ReactMarkdown>
-            )}
-            {!completion && !isLoading && !error && (
-              <div className="text-gray-400 text-center py-10 italic">
-                Clique no botão acima para iniciar a consultoria.
+
+            {completion ? (
+              <div className="ai-response">
+                <ReactMarkdown
+                  components={{
+                    h3: ({...props}) => <h3 className="text-lg font-bold mt-6 mb-3 text-indigo-600 dark:text-indigo-400" {...props} />,
+                    h2: ({...props}) => <h2 className="text-xl font-bold mt-6 mb-3 text-indigo-600 dark:text-indigo-400" {...props} />,
+                    p: ({...props}) => <p className="leading-relaxed mb-4 text-gray-700 dark:text-gray-300" {...props} />,
+                    strong: ({...props}) => <strong className="font-bold text-gray-900 dark:text-white" {...props} />,
+                    ul: ({...props}) => <ul className="list-disc pl-5 mb-4 space-y-2" {...props} />,
+                    ol: ({...props}) => <ol className="list-decimal pl-5 mb-4 space-y-2" {...props} />,
+                    li: ({...props}) => <li className="text-gray-700 dark:text-gray-300" {...props} />,
+                  }}
+                >
+                  {completion}
+                </ReactMarkdown>
               </div>
-            )}
+            ) : isLoading ? (
+              <div className="text-gray-400 text-center py-10 italic flex flex-col items-center gap-3">
+                <Loader2 className="animate-spin text-indigo-500 w-8 h-8" />
+                <span>O Consultor IA está analisando seus dados...</span>
+              </div>
+            ) : null}
           </div>
         </div>
       )}
